@@ -1,0 +1,5 @@
+user=USERNAME
+password=PASSWORD
+dbnameDATABASENAME
+query = SELECT goto FROM alias WHERE address='%s' AND active = 't'
+hosts=127.0.0.1

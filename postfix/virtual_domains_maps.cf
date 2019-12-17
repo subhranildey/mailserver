@@ -1,0 +1,5 @@
+user=USERNAME
+password=PASSWORD
+dbnameDATABASENAME
+query=SELECT domain FROM domain WHERE domain='%s' AND active = 't'
+hosts=127.0.0.1
