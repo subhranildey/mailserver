@@ -1,0 +1,76 @@
+#--------------------------------------------------------------------------------------------------
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+append_dot_mydomain = no
+readme_directory = no
+compatibility_level = 2
+alias_maps = 
+myhostname = MAIL.DOMAIN.COM
+mydestination = 
+relayhost = 
+mynetworks = 127.0.0.0/8 
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = ipv4
+disable_mime_output_conversion = yes
+#--------------------------------------------------------------------------------------------------
+virtual_mailbox_domains =
+ pgsql:/etc/postfix/virtual_domains_maps.cf
+virtual_alias_maps =
+ pgsql:/etc/postfix/virtual_alias_maps.cf,
+ pgsql:/etc/postfix/virtual_alias_domain_maps.cf,
+ pgsql:/etc/postfix/virtual_alias_domain_catchall_maps.cf
+virtual_mailbox_maps =
+ pgsql:/etc/postfix/virtual_mailbox_maps.cf,
+ pgsql:/etc/postfix/virtual_alias_domain_mailbox_maps.cf
+#------------------------------------------------------------------------------------------------- 
+# Virtual transport parameters
+virtual_transport = lmtp:inet:127.0.0.1:24
+#-------------------------------------------------------------------------------------------------
+# SASL parameters
+smtpd_sasl_local_domain = $myhostname
+smtpd_sasl_path = inet:127.0.0.1:12345
+smtpd_sasl_type = dovecot
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_authenticated_header = yes
+broken_sasl_auth_clients = yes
+
+smtpd_delay_reject = yes
+smtpd_sender_login_maps = $virtual_alias_maps
+smtpd_helo_required = yes
+#--------------------------------------------------------------------------------------------------
+# SMTP restrictions
+smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+#smtpd_sender_restrictions =
+#       permit_mynetworks,
+#       reject_non_fqdn_sender,
+#       reject_unknown_sender_domain,
+#       reject_unlisted_sender,
+#       reject_sender_login_mismatch,
+#       permit
+
+#smtpd_recipient_restrictions =
+#       reject_unauth_pipelining,
+#       reject_non_fqdn_recipient,
+#       permit_mynetworks,
+#       permit
+#--------------------------------------------------------------------------------------------------
+# TLS parameters
+smtp_use_tls=yes
+smtpd_tls_cert_file=/etc/letsencrypt/archive/MAIL.DOMAIN.COM/fullchain1.pem
+smtpd_tls_key_file=/etc/letsencrypt/archive/MAIL.DOMAIN.COM/privkey1.pem
+smtp_tls_security_level = may
+smtp_tls_mandatory_protocols = !SSLv2, !SSLv3
+smtp_tls_protocols =!SSLv2,!SSLv3
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+smtpd_use_tls=yes
+smtpd_tls_security_level = may
+smtpd_tls_ciphers = high
+smtpd_tls_mandatory_ciphers = high
+smtpd_tls_exclude_ciphers = aNULL, DES, 3DES, MD5, DES+MD5, RC4
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3
+smtpd_tls_protocols = !SSLv2, !SSLv3
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+#--------------------------------------------------------------------------------------------------
